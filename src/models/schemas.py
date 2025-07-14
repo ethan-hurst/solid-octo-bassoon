@@ -155,6 +155,20 @@ class BacktestResult(BaseModel):
     kelly_performance: Dict[str, float]
 
 
+class ArbitrageOpportunity(BaseModel):
+    """Represents an arbitrage betting opportunity."""
+    game_id: str
+    sport: SportType
+    market_type: BetType
+    home_team: str
+    away_team: str
+    bets: List[Dict[str, Any]]  # List of required bets
+    total_stake: float
+    guaranteed_profit: float
+    profit_percentage: float
+    bookmakers: List[str]
+
+
 class WebSocketMessage(BaseModel):
     """WebSocket message format."""
     type: str
