@@ -38,7 +38,10 @@
       "Bash(alembic revision:*)",
       "Bash(uvicorn:*)",
       "Bash(chmod:*)",
-      "Bash(./run_all.sh)"
+      "Bash(./run_all.sh)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }
