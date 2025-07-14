@@ -6,33 +6,33 @@ from pydantic import Field, validator
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
-    
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False
     )
-    
+
     # Application
     app_name: str = Field(default="Sports Betting Edge Finder")
     debug: bool = Field(default=False)
     log_level: str = Field(default="INFO")
-    
+
     # API Keys
     odds_api_key: str = Field(..., description="The Odds API key")
-    
+
     # Database
     database_url: str = Field(
-        default="postgresql://user:password@localhost/sportsbetting",
-        description="PostgreSQL connection URL"
+        default="sqlite+aiosqlite:///./sportsbetting.db",
+        description="Database connection URL"
     )
-    
+
     # Redis
     redis_url: str = Field(
         default="redis://localhost:6379/0",
         description="Redis connection URL"
     )
-    
+
     # Celery
     celery_broker_url: str = Field(
         default="redis://localhost:6379/1",
@@ -42,7 +42,7 @@ class Settings(BaseSettings):
         default="redis://localhost:6379/2",
         description="Celery result backend URL"
     )
-    
+
     # Security
     secret_key: str = Field(
         default="your-secret-key-here",
@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     )
     algorithm: str = Field(default="HS256")
     access_token_expire_minutes: int = Field(default=30)
-    
+
     # Betting Settings
     alert_threshold_edge: float = Field(
         default=0.05,
@@ -69,7 +69,7 @@ class Settings(BaseSettings):
         ge=0,
         description="Cache TTL in seconds"
     )
-    
+
     # The Odds API Settings
     odds_api_base_url: str = Field(
         default="https://api.the-odds-api.com/v4",
@@ -83,14 +83,14 @@ class Settings(BaseSettings):
         default=3,
         description="Number of retry attempts for API requests"
     )
-    
+
     @validator("database_url")
     def validate_database_url(cls, v: str) -> str:
         """Ensure database URL is PostgreSQL."""
-        if not v.startswith(("postgresql://", "postgres://")):
-            raise ValueError("Database URL must be PostgreSQL")
-        return v
-    
+        if not v.startswith(("postgresql://", "postgres://", "sqlite+aiosqlite:///")):
+            return v
+        raise ValueError("Database URL must be PostgreSQL or SQLite")
+
     @validator("redis_url", "celery_broker_url", "celery_result_backend")
     def validate_redis_url(cls, v: str) -> str:
         """Ensure Redis URLs are valid."""

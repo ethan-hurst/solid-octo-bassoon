@@ -23,15 +23,8 @@ logger = logging.getLogger(__name__)
 security = HTTPBearer()
 
 # Database
-# Ensure URL uses asyncpg driver
-database_url = settings.database_url
-if database_url.startswith("postgresql://"):
-    database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
-elif database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
-
 engine = create_async_engine(
-    database_url,
+    settings.database_url,
     echo=settings.debug,
     future=True
 )
