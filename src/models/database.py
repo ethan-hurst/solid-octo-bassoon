@@ -19,7 +19,6 @@ class OddsSnapshot(Base):
     __table_args__ = (
         Index("idx_odds_game_time", "game_id", "timestamp"),
         Index("idx_odds_bookmaker", "bookmaker", "timestamp"),
-        {"timescaledb_hypertable": {"time_column_name": "timestamp"}},
     )
     
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -116,7 +115,7 @@ class Bet(Base):
     profit = Column(Float, nullable=True)
     
     # Metadata
-    metadata = Column(JSON, default=dict)
+    bet_metadata = Column(JSON, default=dict)
     
     # Relationships
     user = relationship("User", back_populates="bets")
