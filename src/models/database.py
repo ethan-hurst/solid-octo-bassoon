@@ -175,3 +175,149 @@ class BacktestRun(Base):
     results = Column(JSON)
     
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class LiveGame(Base):
+    """Live game tracking table."""
+    __tablename__ = "live_games"
+    __table_args__ = (
+        Index("idx_live_games_active", "is_active", "last_updated"),
+        Index("idx_live_games_sport", "sport", "is_active"),
+    )
+    
+    game_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    sport = Column(String(50), nullable=False)
+    home_team = Column(String(100), nullable=False)
+    away_team = Column(String(100), nullable=False)
+    game_state = Column(JSON, nullable=False)
+    current_score = Column(JSON, nullable=False)
+    game_clock = Column(String(20))
+    quarter_period = Column(Integer)
+    is_active = Column(Boolean, default=True)
+    last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    odds_updates = relationship("LiveOddsUpdate", back_populates="game", cascade="all, delete-orphan")
+    events = relationship("LiveEvent", back_populates="game", cascade="all, delete-orphan")
+    predictions = relationship("LivePrediction", back_populates="game", cascade="all, delete-orphan")
+    value_bets = relationship("LiveValueBet", back_populates="game", cascade="all, delete-orphan")
+
+
+class LiveOddsUpdate(Base):
+    """Live odds updates table (TimescaleDB hypertable)."""
+    __tablename__ = "live_odds_updates"
+    __table_args__ = (
+        Index("idx_live_odds_game_timestamp", "game_id", "timestamp"),
+        Index("idx_live_odds_bookmaker_timestamp", "bookmaker", "timestamp"),
+        {"timescaledb_hypertable": {"time_column_name": "timestamp"}},
+    )
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    game_id = Column(UUID(as_uuid=True), ForeignKey("live_games.game_id"), nullable=False)
+    bookmaker = Column(String(50), nullable=False)
+    bet_type = Column(String(50), nullable=False)
+    odds_before = Column(Float)
+    odds_after = Column(Float)
+    line_before = Column(Float)
+    line_after = Column(Float)
+    significance_score = Column(Float)
+    timestamp = Column(DateTime, nullable=False, index=True, default=datetime.utcnow)
+    
+    # Relationships
+    game = relationship("LiveGame", back_populates="odds_updates")
+
+
+class LiveEvent(Base):
+    """Live game events table (TimescaleDB hypertable)."""
+    __tablename__ = "live_events"
+    __table_args__ = (
+        Index("idx_live_events_game_timestamp", "game_id", "timestamp"),
+        Index("idx_live_events_type", "event_type", "timestamp"),
+        {"timescaledb_hypertable": {"time_column_name": "timestamp"}},
+    )
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    game_id = Column(UUID(as_uuid=True), ForeignKey("live_games.game_id"), nullable=False)
+    event_type = Column(String(50), nullable=False)
+    event_description = Column(Text)
+    event_data = Column(JSON)
+    game_clock = Column(String(20))
+    impact_score = Column(Float)
+    probability_change = Column(JSON)
+    timestamp = Column(DateTime, nullable=False, index=True, default=datetime.utcnow)
+    
+    # Relationships
+    game = relationship("LiveGame", back_populates="events")
+
+
+class LivePrediction(Base):
+    """Live ML predictions table (TimescaleDB hypertable)."""
+    __tablename__ = "live_predictions"
+    __table_args__ = (
+        Index("idx_live_predictions_game_timestamp", "game_id", "prediction_timestamp"),
+        Index("idx_live_predictions_model", "model_version", "prediction_timestamp"),
+        {"timescaledb_hypertable": {"time_column_name": "prediction_timestamp"}},
+    )
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    game_id = Column(UUID(as_uuid=True), ForeignKey("live_games.game_id"), nullable=False)
+    model_version = Column(String(50), nullable=False)
+    home_win_probability = Column(Float, nullable=False)
+    away_win_probability = Column(Float, nullable=False)
+    draw_probability = Column(Float)
+    confidence_score = Column(Float, nullable=False)
+    features_used = Column(JSON)
+    prediction_timestamp = Column(DateTime, nullable=False, index=True, default=datetime.utcnow)
+    
+    # Relationships
+    game = relationship("LiveGame", back_populates="predictions")
+
+
+class LiveValueBet(Base):
+    """Live value betting opportunities table (TimescaleDB hypertable)."""
+    __tablename__ = "live_value_bets"
+    __table_args__ = (
+        Index("idx_live_value_bets_active", "is_active", "detected_at"),
+        Index("idx_live_value_bets_game", "game_id", "is_active"),
+        Index("idx_live_value_bets_edge", "edge", postgresql_where="is_active = true"),
+        {"timescaledb_hypertable": {"time_column_name": "detected_at"}},
+    )
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    game_id = Column(UUID(as_uuid=True), ForeignKey("live_games.game_id"), nullable=False)
+    bookmaker = Column(String(50), nullable=False)
+    bet_type = Column(String(50), nullable=False)
+    selection = Column(String(100), nullable=False)
+    odds = Column(Float, nullable=False)
+    fair_odds = Column(Float, nullable=False)
+    edge = Column(Float, nullable=False)
+    confidence = Column(Float, nullable=False)
+    kelly_fraction = Column(Float)
+    recommended_stake = Column(Float)
+    is_active = Column(Boolean, default=True)
+    detected_at = Column(DateTime, nullable=False, index=True, default=datetime.utcnow)
+    expires_at = Column(DateTime)
+    
+    # Relationships
+    game = relationship("LiveGame", back_populates="value_bets")
+
+
+class LiveSubscription(Base):
+    """User subscriptions to live betting alerts."""
+    __tablename__ = "live_subscriptions"
+    __table_args__ = (
+        Index("idx_live_subscriptions_user", "user_id", "is_active"),
+        Index("idx_live_subscriptions_type_target", "subscription_type", "subscription_target"),
+    )
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    subscription_type = Column(String(50), nullable=False)  # 'game', 'sport', 'team'
+    subscription_target = Column(String(100), nullable=False)  # game_id, sport, team_name
+    min_edge_threshold = Column(Float, default=0.02)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    user = relationship("User")

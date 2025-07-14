@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 from src.config.settings import settings
-from src.api.routers import odds, alerts, analysis
+from src.api.routers import odds, alerts, analysis, live_betting
 from src.api.websocket import websocket_router
 from src.api.dependencies import (
     redis_pubsub_manager,
@@ -112,6 +112,12 @@ app.include_router(
     analysis.router,
     prefix="/api/analysis",
     tags=["analysis"]
+)
+
+app.include_router(
+    live_betting.router,
+    prefix="/api/live",
+    tags=["live_betting"]
 )
 
 app.include_router(
