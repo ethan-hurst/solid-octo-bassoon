@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      POSTGRES_USER: sportsbetting
+      POSTGRES_PASSWORD: sportsbetting
+      POSTGRES_DB: sportsbetting
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sportsbetting"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  celery-worker:
+    build: .
+    command: celery -A src.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://sportsbetting:sportsbetting@postgres/sportsbetting
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./src:/app/src
+    env_file:
+      - .env
+
+  celery-beat:
+    build: .
+    command: celery -A src.celery_app beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://sportsbetting:sportsbetting@postgres/sportsbetting
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./src:/app/src
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:
+  redis_data:

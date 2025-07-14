@@ -1,296 +1,362 @@
-# Context Engineering Template
+# Sports Betting Edge Finder
 
-A comprehensive template for getting started with Context Engineering - the discipline of engineering context for AI coding assistants so they have the information necessary to get the job done end to end.
+An advanced sports betting application that analyzes news, fan sentiment, and multiple data points to identify value bets with mathematical edges.
 
-> **Context Engineering is 10x better than prompt engineering and 100x better than vibe coding.**
+## 🎯 Features
+
+### Core Functionality
+- **Real-time Odds Aggregation**: Fetches live odds from multiple bookmakers via The Odds API
+- **ML-Powered Predictions**: XGBoost and ensemble models for accurate probability estimation
+- **Value Bet Detection**: Kelly Criterion-based bet sizing with confidence scoring
+- **Arbitrage Detection**: Identifies risk-free betting opportunities across bookmakers
+- **Real-time Alerts**: WebSocket-based notifications for value bets and arbitrage
+
+### Advanced Analytics
+- **Portfolio Kelly Optimization**: Manages correlated bets for optimal bankroll allocation
+- **Historical Analysis**: Tracks odds movements and betting patterns
+- **Performance Metrics**: ROI tracking and model validation
+- **Risk Management**: Exposure limits and bet sizing controls
+
+### Infrastructure
+- **FastAPI Backend**: High-performance async API with automatic documentation
+- **Real-time WebSockets**: Live updates and notifications
+- **Celery Background Tasks**: Automated odds fetching and analysis
+- **Redis Caching**: Fast data access and pub/sub messaging
+- **PostgreSQL + TimescaleDB**: Optimized for time-series betting data
 
 ## 🚀 Quick Start
 
+### Prerequisites
+- Python 3.11+
+- PostgreSQL with TimescaleDB extension
+- Redis
+- Docker (optional)
+
+### Installation
+
+1. **Clone and setup environment**:
 ```bash
-# 1. Clone this template
-git clone https://github.com/coleam00/Context-Engineering-Intro.git
-cd Context-Engineering-Intro
-
-# 2. Set up your project rules (optional - template provided)
-# Edit CLAUDE.md to add your project-specific guidelines
-
-# 3. Add examples (highly recommended)
-# Place relevant code examples in the examples/ folder
-
-# 4. Create your initial feature request
-# Edit INITIAL.md with your feature requirements
-
-# 5. Generate a comprehensive PRP (Product Requirements Prompt)
-# In Claude Code, run:
-/generate-prp INITIAL.md
-
-# 6. Execute the PRP to implement your feature
-# In Claude Code, run:
-/execute-prp PRPs/your-feature-name.md
+git clone <repository-url>
+cd sports-betting-edge-finder
+python -m venv venv_linux
+source venv_linux/bin/activate  # On Windows: venv_linux\Scripts\activate
 ```
 
-## 📚 Table of Contents
-
-- [What is Context Engineering?](#what-is-context-engineering)
-- [Template Structure](#template-structure)
-- [Step-by-Step Guide](#step-by-step-guide)
-- [Writing Effective INITIAL.md Files](#writing-effective-initialmd-files)
-- [The PRP Workflow](#the-prp-workflow)
-- [Using Examples Effectively](#using-examples-effectively)
-- [Best Practices](#best-practices)
-
-## What is Context Engineering?
-
-Context Engineering represents a paradigm shift from traditional prompt engineering:
-
-### Prompt Engineering vs Context Engineering
-
-**Prompt Engineering:**
-- Focuses on clever wording and specific phrasing
-- Limited to how you phrase a task
-- Like giving someone a sticky note
-
-**Context Engineering:**
-- A complete system for providing comprehensive context
-- Includes documentation, examples, rules, patterns, and validation
-- Like writing a full screenplay with all the details
-
-### Why Context Engineering Matters
-
-1. **Reduces AI Failures**: Most agent failures aren't model failures - they're context failures
-2. **Ensures Consistency**: AI follows your project patterns and conventions
-3. **Enables Complex Features**: AI can handle multi-step implementations with proper context
-4. **Self-Correcting**: Validation loops allow AI to fix its own mistakes
-
-## Template Structure
-
-```
-context-engineering-intro/
-├── .claude/
-│   ├── commands/
-│   │   ├── generate-prp.md    # Generates comprehensive PRPs
-│   │   └── execute-prp.md     # Executes PRPs to implement features
-│   └── settings.local.json    # Claude Code permissions
-├── PRPs/
-│   ├── templates/
-│   │   └── prp_base.md       # Base template for PRPs
-│   └── EXAMPLE_multi_agent_prp.md  # Example of a complete PRP
-├── examples/                  # Your code examples (critical!)
-├── CLAUDE.md                 # Global rules for AI assistant
-├── INITIAL.md               # Template for feature requests
-├── INITIAL_EXAMPLE.md       # Example feature request
-└── README.md                # This file
-```
-
-This template doesn't focus on RAG and tools with context engineering because I have a LOT more in store for that soon. ;)
-
-## Step-by-Step Guide
-
-### 1. Set Up Global Rules (CLAUDE.md)
-
-The `CLAUDE.md` file contains project-wide rules that the AI assistant will follow in every conversation. The template includes:
-
-- **Project awareness**: Reading planning docs, checking tasks
-- **Code structure**: File size limits, module organization
-- **Testing requirements**: Unit test patterns, coverage expectations
-- **Style conventions**: Language preferences, formatting rules
-- **Documentation standards**: Docstring formats, commenting practices
-
-**You can use the provided template as-is or customize it for your project.**
-
-### 2. Create Your Initial Feature Request
-
-Edit `INITIAL.md` to describe what you want to build:
-
-```markdown
-## FEATURE:
-[Describe what you want to build - be specific about functionality and requirements]
-
-## EXAMPLES:
-[List any example files in the examples/ folder and explain how they should be used]
-
-## DOCUMENTATION:
-[Include links to relevant documentation, APIs, or MCP server resources]
-
-## OTHER CONSIDERATIONS:
-[Mention any gotchas, specific requirements, or things AI assistants commonly miss]
-```
-
-**See `INITIAL_EXAMPLE.md` for a complete example.**
-
-### 3. Generate the PRP
-
-PRPs (Product Requirements Prompts) are comprehensive implementation blueprints that include:
-
-- Complete context and documentation
-- Implementation steps with validation
-- Error handling patterns
-- Test requirements
-
-They are similar to PRDs (Product Requirements Documents) but are crafted more specifically to instruct an AI coding assistant.
-
-Run in Claude Code:
+2. **Install dependencies**:
 ```bash
-/generate-prp INITIAL.md
+pip install -r requirements.txt
 ```
 
-**Note:** The slash commands are custom commands defined in `.claude/commands/`. You can view their implementation:
-- `.claude/commands/generate-prp.md` - See how it researches and creates PRPs
-- `.claude/commands/execute-prp.md` - See how it implements features from PRPs
+3. **Environment setup**:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
 
-The `$ARGUMENTS` variable in these commands receives whatever you pass after the command name (e.g., `INITIAL.md` or `PRPs/your-feature.md`).
+4. **Database setup**:
+```bash
+# Start PostgreSQL and Redis (or use Docker)
+docker-compose up -d postgres redis
 
-This command will:
-1. Read your feature request
-2. Research the codebase for patterns
-3. Search for relevant documentation
-4. Create a comprehensive PRP in `PRPs/your-feature-name.md`
+# Run migrations
+alembic upgrade head
+```
 
-### 4. Execute the PRP
+5. **Get The Odds API key**:
+   - Sign up at [The Odds API](https://the-odds-api.com/)
+   - Add your API key to `.env`
 
-Once generated, execute the PRP to implement your feature:
+### Running the Application
+
+**Development mode**:
+```bash
+# Start the API server
+uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
+
+# Start Celery worker (in another terminal)
+celery -A src.celery_app worker --loglevel=info
+
+# Start Celery beat scheduler (in another terminal)
+celery -A src.celery_app beat --loglevel=info
+```
+
+**Docker mode**:
+```bash
+docker-compose up
+```
+
+## 🔧 Configuration
+
+### Environment Variables
 
 ```bash
-/execute-prp PRPs/your-feature-name.md
+# Database
+DATABASE_URL=postgresql+asyncpg://user:password@localhost/sports_betting
+REDIS_URL=redis://localhost:6379
+
+# The Odds API
+ODDS_API_KEY=your_api_key_here
+ODDS_API_BASE_URL=https://api.the-odds-api.com/v4
+
+# Security
+SECRET_KEY=your-secret-key-here
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Celery
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0
+
+# Betting Parameters
+MIN_EDGE_THRESHOLD=0.05
+MAX_KELLY_FRACTION=0.25
+MAX_BANKROLL_PERCENTAGE=0.10
 ```
 
-The AI coding assistant will:
-1. Read all context from the PRP
-2. Create a detailed implementation plan
-3. Execute each step with validation
-4. Run tests and fix any issues
-5. Ensure all success criteria are met
+## 📊 API Usage
 
-## Writing Effective INITIAL.md Files
+### Authentication
+```bash
+# Register
+curl -X POST "http://localhost:8000/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "username": "user", "password": "password"}'
 
-### Key Sections Explained
-
-**FEATURE**: Be specific and comprehensive
-- ❌ "Build a web scraper"
-- ✅ "Build an async web scraper using BeautifulSoup that extracts product data from e-commerce sites, handles rate limiting, and stores results in PostgreSQL"
-
-**EXAMPLES**: Leverage the examples/ folder
-- Place relevant code patterns in `examples/`
-- Reference specific files and patterns to follow
-- Explain what aspects should be mimicked
-
-**DOCUMENTATION**: Include all relevant resources
-- API documentation URLs
-- Library guides
-- MCP server documentation
-- Database schemas
-
-**OTHER CONSIDERATIONS**: Capture important details
-- Authentication requirements
-- Rate limits or quotas
-- Common pitfalls
-- Performance requirements
-
-## The PRP Workflow
-
-### How /generate-prp Works
-
-The command follows this process:
-
-1. **Research Phase**
-   - Analyzes your codebase for patterns
-   - Searches for similar implementations
-   - Identifies conventions to follow
-
-2. **Documentation Gathering**
-   - Fetches relevant API docs
-   - Includes library documentation
-   - Adds gotchas and quirks
-
-3. **Blueprint Creation**
-   - Creates step-by-step implementation plan
-   - Includes validation gates
-   - Adds test requirements
-
-4. **Quality Check**
-   - Scores confidence level (1-10)
-   - Ensures all context is included
-
-### How /execute-prp Works
-
-1. **Load Context**: Reads the entire PRP
-2. **Plan**: Creates detailed task list using TodoWrite
-3. **Execute**: Implements each component
-4. **Validate**: Runs tests and linting
-5. **Iterate**: Fixes any issues found
-6. **Complete**: Ensures all requirements met
-
-See `PRPs/EXAMPLE_multi_agent_prp.md` for a complete example of what gets generated.
-
-## Using Examples Effectively
-
-The `examples/` folder is **critical** for success. AI coding assistants perform much better when they can see patterns to follow.
-
-### What to Include in Examples
-
-1. **Code Structure Patterns**
-   - How you organize modules
-   - Import conventions
-   - Class/function patterns
-
-2. **Testing Patterns**
-   - Test file structure
-   - Mocking approaches
-   - Assertion styles
-
-3. **Integration Patterns**
-   - API client implementations
-   - Database connections
-   - Authentication flows
-
-4. **CLI Patterns**
-   - Argument parsing
-   - Output formatting
-   - Error handling
-
-### Example Structure
-
-```
-examples/
-├── README.md           # Explains what each example demonstrates
-├── cli.py             # CLI implementation pattern
-├── agent/             # Agent architecture patterns
-│   ├── agent.py      # Agent creation pattern
-│   ├── tools.py      # Tool implementation pattern
-│   └── providers.py  # Multi-provider pattern
-└── tests/            # Testing patterns
-    ├── test_agent.py # Unit test patterns
-    └── conftest.py   # Pytest configuration
+# Login
+curl -X POST "http://localhost:8000/api/v1/auth/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=user&password=password"
 ```
 
-## Best Practices
+### Getting Odds
+```bash
+# Current odds for NFL
+curl "http://localhost:8000/api/v1/odds/current/NFL"
 
-### 1. Be Explicit in INITIAL.md
-- Don't assume the AI knows your preferences
-- Include specific requirements and constraints
-- Reference examples liberally
+# Historical odds for a game
+curl "http://localhost:8000/api/v1/odds/history/game_id_123"
+```
 
-### 2. Provide Comprehensive Examples
-- More examples = better implementations
-- Show both what to do AND what not to do
-- Include error handling patterns
+### Value Betting
+```bash
+# Find value bets (requires authentication)
+curl -H "Authorization: Bearer <token>" \
+  "http://localhost:8000/api/v1/analysis/value-bets?sport=NFL&min_edge=0.05"
 
-### 3. Use Validation Gates
-- PRPs include test commands that must pass
-- AI will iterate until all validations succeed
-- This ensures working code on first try
+# Calculate bet size
+curl -X POST "http://localhost:8000/api/v1/analysis/bet-size" \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"value_bet": {...}, "bankroll": 10000}'
+```
 
-### 4. Leverage Documentation
-- Include official API docs
-- Add MCP server resources
-- Reference specific documentation sections
+### WebSocket Connection
+```javascript
+const ws = new WebSocket('ws://localhost:8000/api/v1/ws/user_id');
 
-### 5. Customize CLAUDE.md
-- Add your conventions
-- Include project-specific rules
-- Define coding standards
+ws.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log('Received alert:', data);
+};
 
-## Resources
+// Subscribe to NFL alerts
+ws.send(JSON.stringify({
+    action: 'subscribe',
+    channels: ['sport:NFL', 'user:your_user_id']
+}));
+```
 
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
-- [Context Engineering Best Practices](https://www.philschmid.de/context-engineering)
+## 🧠 Machine Learning Models
+
+### Training Models
+```bash
+# Train models for all sports
+python scripts/train_models.py
+
+# Train specific sport
+python scripts/train_models.py --sport NFL
+
+# Evaluate model performance
+python scripts/evaluate_models.py
+```
+
+### Model Architecture
+- **XGBoost**: Primary model for win probability prediction
+- **Random Forest**: Secondary model for ensemble
+- **Logistic Regression**: Baseline model
+- **Ensemble**: Weighted combination of all models
+
+### Features
+- Team statistics (offensive/defensive rankings)
+- Recent performance metrics
+- Head-to-head history
+- Injury reports
+- Weather conditions
+- Market sentiment indicators
+
+## 🧪 Testing
+
+### Run Tests
+```bash
+# All tests
+pytest
+
+# Specific test file
+pytest tests/test_value_calculator.py
+
+# With coverage
+pytest --cov=src tests/
+
+# Integration tests only
+pytest tests/test_integration.py -v
+```
+
+### Test Categories
+- **Unit Tests**: Individual component testing
+- **Integration Tests**: End-to-end workflow testing
+- **API Tests**: Endpoint functionality testing
+- **WebSocket Tests**: Real-time communication testing
+
+## 📈 Monitoring and Analytics
+
+### Health Checks
+```bash
+curl http://localhost:8000/health
+```
+
+### Metrics Endpoints
+- `/metrics` - Prometheus metrics
+- `/api/v1/analytics/performance` - Model performance
+- `/api/v1/analytics/roi` - Return on investment tracking
+
+### Logging
+Structured logging with correlation IDs:
+```python
+import logging
+logger = logging.getLogger(__name__)
+logger.info("Value bet found", extra={
+    "game_id": "123",
+    "edge": 0.08,
+    "confidence": 0.85
+})
+```
+
+## 🔄 Data Pipeline
+
+### Automated Tasks
+- **Odds Fetching**: Every 5 minutes
+- **Value Bet Analysis**: Every 10 minutes  
+- **Model Updates**: Daily at 3 AM UTC
+- **Data Cleanup**: Weekly on Sundays
+
+### Data Flow
+1. **Collection**: Odds fetched from The Odds API
+2. **Storage**: Cached in Redis, persisted in PostgreSQL
+3. **Analysis**: ML models generate probability predictions
+4. **Detection**: Value bets identified using Kelly Criterion
+5. **Notification**: Real-time alerts sent to subscribed users
+
+## 🚀 Deployment
+
+### Production Deployment
+```bash
+# Build Docker images
+docker-compose build
+
+# Deploy with production settings
+docker-compose -f docker-compose.prod.yml up -d
+
+# Database migrations
+docker-compose exec api alembic upgrade head
+```
+
+### Scaling Considerations
+- **Horizontal Scaling**: Multiple API instances behind load balancer
+- **Database**: Read replicas for analytics queries
+- **Cache**: Redis Cluster for high availability
+- **Background Tasks**: Multiple Celery workers
+
+## 🔐 Security
+
+### Best Practices Implemented
+- JWT token authentication with expiration
+- Password hashing with bcrypt
+- SQL injection prevention via SQLAlchemy
+- Rate limiting on API endpoints
+- Input validation with Pydantic
+- CORS configuration for web clients
+
+### Recommended Production Settings
+- Use HTTPS in production
+- Set strong SECRET_KEY
+- Configure rate limiting
+- Enable database SSL
+- Use environment variable secrets
+
+## 📝 API Documentation
+
+### Interactive Documentation
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI JSON**: http://localhost:8000/openapi.json
+
+### Key Endpoints
+- `GET /api/v1/odds/current/{sport}` - Current odds
+- `GET /api/v1/analysis/value-bets` - Value betting opportunities
+- `GET /api/v1/analysis/arbitrage` - Arbitrage opportunities
+- `WebSocket /api/v1/ws/{user_id}` - Real-time alerts
+
+## 🤝 Contributing
+
+### Development Setup
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/new-feature`
+3. Install development dependencies: `pip install -r requirements-dev.txt`
+4. Make changes and add tests
+5. Run tests: `pytest`
+6. Submit pull request
+
+### Code Standards
+- Follow PEP 8 style guidelines
+- Use type hints
+- Write docstrings for all functions
+- Add tests for new features
+- Keep functions under 50 lines
+
+## 📋 Roadmap
+
+### Short Term
+- [ ] Add more sports (NCAAF, NCAAB, Soccer leagues)
+- [ ] Implement prop bet analysis
+- [ ] Add live betting support
+- [ ] Mobile app development
+
+### Medium Term
+- [ ] Advanced ML features (player props, live betting)
+- [ ] Social features (leaderboards, bet sharing)
+- [ ] Integration with more data sources
+- [ ] Advanced risk management tools
+
+### Long Term
+- [ ] Multi-language support
+- [ ] Cryptocurrency betting integration
+- [ ] AI-powered betting strategies
+- [ ] Professional trader tools
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## ⚠️ Disclaimer
+
+This software is for educational and research purposes only. Sports betting involves financial risk. Always bet responsibly and within your means. The developers are not responsible for any financial losses incurred through the use of this software.
+
+## 📞 Support
+
+- **Documentation**: [Link to docs]
+- **Issues**: [GitHub Issues]
+- **Discord**: [Community Discord]
+- **Email**: support@sportsbetting-edge.com
+
+---
+
+**Made with ❤️ for the sports betting community**
