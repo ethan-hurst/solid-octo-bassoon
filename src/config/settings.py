@@ -86,8 +86,8 @@ class Settings(BaseSettings):
 
     @validator("database_url")
     def validate_database_url(cls, v: str) -> str:
-        """Ensure database URL is PostgreSQL."""
-        if not v.startswith(("postgresql://", "postgres://", "sqlite+aiosqlite:///")):
+        """Ensure database URL is valid."""
+        if v.startswith(("postgresql://", "postgres://", "sqlite+aiosqlite:///")):
             return v
         raise ValueError("Database URL must be PostgreSQL or SQLite")
 
