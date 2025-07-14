@@ -7,7 +7,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Session
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
 Base = declarative_base()
@@ -44,7 +43,7 @@ class User(Base):
         UniqueConstraint("username", name="uq_user_username"),
     )
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     email = Column(String, nullable=False, index=True)
     username = Column(String, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
@@ -71,8 +70,8 @@ class Alert(Base):
         Index("idx_alert_status", "status"),
     )
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
     value_bet_data = Column(JSON, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     notification_channels = Column(JSON, default=list)
@@ -92,8 +91,8 @@ class Bet(Base):
         Index("idx_bet_game", "game_id"),
     )
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
     game_id = Column(String, nullable=False)
     sport = Column(String, nullable=False)
     market_type = Column(String, nullable=False)
@@ -128,7 +127,7 @@ class MLModel(Base):
         UniqueConstraint("sport", "model_type", "version", name="uq_model_version"),
     )
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     sport = Column(String, nullable=False)
     model_type = Column(String, nullable=False)  # xgboost, ensemble, etc.
     version = Column(String, nullable=False)
@@ -155,7 +154,7 @@ class BacktestRun(Base):
     """Backtesting run history."""
     __tablename__ = "backtest_runs"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     strategy_name = Column(String, nullable=False)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
