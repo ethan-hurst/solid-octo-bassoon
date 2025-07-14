@@ -11,3 +11,5 @@ export { default as ConfidenceIndicator } from './ConfidenceIndicator';
 export { default as ActionButtons } from './ActionButtons';
 export { default as SwipeableCard } from './SwipeableCard';
 export { default as LiveGameCard } from './LiveGameCard';
+export { default as SocialPostCard } from './SocialPostCard';
+export { default as CreatePostModal } from './CreatePostModal';

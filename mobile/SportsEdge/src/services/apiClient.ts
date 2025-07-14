@@ -212,11 +212,19 @@ class ApiClient {
     });
   }
 
-  async getSocialFeed(page = 1, limit = 20) {
+  async getSocialFeed(page = 1, limit = 20, filters?: any) {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
     });
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(key, value.toString());
+        }
+      });
+    }
 
     return this.get(`/mobile/social/feed?${params}`);
   }
