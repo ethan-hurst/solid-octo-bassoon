@@ -5,6 +5,7 @@ from sqlalchemy import (
     Column, String, Float, DateTime, JSON, Boolean, 
     Integer, ForeignKey, Index, Text, UniqueConstraint
 )
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Session
 import uuid
