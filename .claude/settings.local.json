@@ -31,7 +31,14 @@
       "Bash(npm run dev:*)",
       "Bash(npx:*)",
       "Bash(npm run test:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(cp:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(alembic upgrade:*)",
+      "Bash(alembic revision:*)",
+      "Bash(uvicorn:*)",
+      "Bash(chmod:*)",
+      "Bash(./run_all.sh)"
     ],
     "deny": []
   }
