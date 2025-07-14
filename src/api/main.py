@@ -8,6 +8,7 @@ import uvicorn
 
 from src.config.settings import settings
 from src.api.routers import odds, alerts, analysis, live_betting
+from src.routers import mobile
 from src.api.websocket import websocket_router
 from src.api.dependencies import (
     redis_pubsub_manager,
@@ -124,6 +125,11 @@ app.include_router(
     websocket_router,
     prefix="/ws",
     tags=["websocket"]
+)
+
+app.include_router(
+    mobile.router,
+    tags=["mobile"]
 )
 
 

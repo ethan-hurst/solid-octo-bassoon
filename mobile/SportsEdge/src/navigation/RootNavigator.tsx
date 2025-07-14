@@ -1,0 +1,25 @@
+/**
+ * Root Navigator - Main navigation container
+ */
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useSelector, useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { RootStackParamList } from './types';
+import { RootState } from '../store';
+import { setUser } from '../store/slices/authSlice';
+
+// Navigators
+import AuthNavigator from './AuthNavigator';
+import TabNavigator from './TabNavigator';
+
+// Placeholder screens for modals
+import PlaceholderScreen from '../screens/PlaceholderScreen';
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const RootNavigator: React.FC = () => {
+  const dispatch = useDispatch();
+  const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);\n  const theme = useSelector((state: RootState) => state.userPreferences.theme);\n\n  const isDark = theme.theme === 'dark' || \n    (theme.theme === 'auto' && new Date().getHours() > 18);\n\n  const colors = {\n    background: isDark ? '#0F172A' : '#FFFFFF',\n    text: isDark ? '#F1F5F9' : '#1E293B',\n    border: isDark ? '#1E293B' : '#E2E8F0',\n  };\n\n  // Check for stored authentication on app start\n  useEffect(() => {\n    const checkAuthStatus = async () => {\n      try {\n        const token = await AsyncStorage.getItem('authToken');\n        const userString = await AsyncStorage.getItem('user');\n        \n        if (token && userString) {\n          const user = JSON.parse(userString);\n          dispatch(setUser({ user, token }));\n        }\n      } catch (error) {\n        console.error('Error checking auth status:', error);\n      }\n    };\n\n    checkAuthStatus();\n  }, [dispatch]);\n\n  // Theme for navigation container\n  const navigationTheme = {\n    dark: isDark,\n    colors: {\n      primary: theme.accentColor,\n      background: colors.background,\n      card: colors.background,\n      text: colors.text,\n      border: colors.border,\n      notification: theme.accentColor,\n    },\n  };\n\n  if (isLoading) {\n    // TODO: Show splash screen component\n    return null;\n  }\n\n  return (\n    <NavigationContainer theme={navigationTheme}>\n      <Stack.Navigator screenOptions={{ headerShown: false }}>\n        {!isAuthenticated ? (\n          <Stack.Screen name=\"Auth\" component={AuthNavigator} />\n        ) : (\n          <>\n            <Stack.Screen name=\"Main\" component={TabNavigator} />\n            \n            {/* Modal screens */}\n            <Stack.Group screenOptions={{ presentation: 'modal' }}>\n              <Stack.Screen\n                name=\"Modal\"\n                component={ModalNavigator}\n                options={{\n                  headerShown: false,\n                }}\n              />\n            </Stack.Group>\n          </>\n        )}\n      </Stack.Navigator>\n    </NavigationContainer>\n  );\n};\n\n// Modal Navigator for modal screens\nconst ModalStack = createNativeStackNavigator();\n\nconst ModalNavigator: React.FC = () => {\n  const theme = useSelector((state: RootState) => state.userPreferences.theme);\n\n  const isDark = theme.theme === 'dark' || \n    (theme.theme === 'auto' && new Date().getHours() > 18);\n\n  const colors = {\n    background: isDark ? '#0F172A' : '#FFFFFF',\n    text: isDark ? '#F1F5F9' : '#1E293B',\n    border: isDark ? '#1E293B' : '#E2E8F0',\n  };\n\n  const screenOptions = {\n    headerStyle: {\n      backgroundColor: colors.background,\n    },\n    headerTintColor: colors.text,\n    headerTitleStyle: {\n      fontWeight: '600' as const,\n    },\n    headerShadowVisible: false,\n    headerBackTitleVisible: false,\n  };\n\n  return (\n    <ModalStack.Navigator screenOptions={screenOptions}>\n      <ModalStack.Screen\n        name=\"QuickBetModal\"\n        component={PlaceholderScreen}\n        options={{\n          title: 'Quick Bet',\n          presentation: 'modal',\n        }}\n        initialParams={{ title: 'Quick Bet Modal' }}\n      />\n      \n      <ModalStack.Screen\n        name=\"FilterModal\"\n        component={PlaceholderScreen}\n        options={{\n          title: 'Filters',\n          presentation: 'modal',\n        }}\n        initialParams={{ title: 'Filter Modal' }}\n      />\n      \n      <ModalStack.Screen\n        name=\"ShareModal\"\n        component={PlaceholderScreen}\n        options={{\n          title: 'Share',\n          presentation: 'modal',\n        }}\n        initialParams={{ title: 'Share Modal' }}\n      />\n      \n      <ModalStack.Screen\n        name=\"NotificationModal\"\n        component={PlaceholderScreen}\n        options={{\n          title: 'Notification',\n          presentation: 'modal',\n        }}\n        initialParams={{ title: 'Notification Modal' }}\n      />\n    </ModalStack.Navigator>\n  );\n};\n\nexport default RootNavigator;
