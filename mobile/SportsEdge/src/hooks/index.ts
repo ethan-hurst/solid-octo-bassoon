@@ -21,3 +21,28 @@ export {
   useOfflineData,
   useOfflineAnalytics,
 } from './useOffline';
+
+export {
+  useAnalytics,
+  useScreenAnalytics,
+  useInteractionAnalytics,
+  useBettingAnalytics,
+  usePerformanceAnalytics,
+  useSessionAnalytics,
+  useRenderPerformance,
+  useABTestAnalytics,
+  useErrorAnalytics,
+} from './useAnalytics';
+
+export {
+  usePerformanceTracking,
+  useMemoryWarning,
+  useAppStatePerformance,
+  useOptimizedCallback,
+  useInteractionManager,
+  useRenderOptimization,
+  useLazyLoading,
+  useImagePreloader,
+  useMemoryOptimization,
+  useBatchedUpdates,
+} from './usePerformance';

@@ -33,7 +33,15 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>SportsEdge uses location to provide geo-relevant betting odds and comply with regional regulations.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>SportsEdge uses Face ID for secure and convenient authentication to protect your account and betting data.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>SportsEdge uses the camera to scan QR codes for quick account setup and secure authentication.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>SportsEdge allows you to upload profile photos and share betting screenshots with the community.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>SportsEdge sends push notifications for real-time bet alerts, value opportunities, and live game updates.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -43,10 +51,42 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.sportsedge.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sportsedge</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.sportsedge.universal</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>https</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>sportsedge</string>
+		<string>https</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>background-fetch</string>
+		<string>remote-notification</string>
+		<string>background-processing</string>
+	</array>
+	<key>UIUserInterfaceStyle</key>
+	<string>Automatic</string>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleLightContent</string>
 </dict>
 </plist>
