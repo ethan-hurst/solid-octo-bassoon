@@ -86,10 +86,16 @@ class Settings(BaseSettings):
 
     @validator("database_url")
     def validate_database_url(cls, v: str) -> str:
-        """Ensure database URL is valid."""
-        if v.startswith(("postgresql://", "postgres://", "sqlite+aiosqlite:///")):
+        """Ensure database URL is valid and uses async drivers."""
+        # For async SQLAlchemy, we need async drivers
+        if v.startswith(("postgresql+asyncpg://", "postgres+asyncpg://", "sqlite+aiosqlite:///")):
             return v
-        raise ValueError("Database URL must be PostgreSQL or SQLite")
+        # Convert synchronous PostgreSQL URLs to async
+        if v.startswith("postgresql://"):
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        if v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql+asyncpg://", 1)
+        raise ValueError("Database URL must use async drivers: postgresql+asyncpg:// or sqlite+aiosqlite://")
 
     @validator("redis_url", "celery_broker_url", "celery_result_backend")
     def validate_redis_url(cls, v: str) -> str:

@@ -13,7 +13,7 @@ source venv/bin/activate
 if [ ! -f ".deps_installed" ]; then
     echo "📦 Installing Python dependencies..."
     pip install -r requirements.txt
-    pip install psycopg2-binary
+    pip install psycopg2-binary asyncpg aiosqlite
     touch .deps_installed
 fi
 

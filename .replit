@@ -50,7 +50,7 @@ externalPort = 3000
 
 [env]
 PYTHONPATH = "/home/runner/${REPL_SLUG}"
-DATABASE_URL = "postgresql://sportsbetting:sportsbetting@localhost/sportsbetting"
+DATABASE_URL = "postgresql+asyncpg://sportsbetting:sportsbetting@localhost/sportsbetting"
 REDIS_URL = "redis://localhost:6379/0"
 CELERY_BROKER_URL = "redis://localhost:6379/1"
 CELERY_RESULT_BACKEND = "redis://localhost:6379/2"

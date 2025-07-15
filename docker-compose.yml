@@ -33,7 +33,7 @@ services:
     build: .
     command: celery -A src.celery_app worker --loglevel=info
     environment:
-      - DATABASE_URL=postgresql://sportsbetting:sportsbetting@postgres/sportsbetting
+      - DATABASE_URL=postgresql+asyncpg://sportsbetting:sportsbetting@postgres/sportsbetting
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/1
       - CELERY_RESULT_BACKEND=redis://redis:6379/2
@@ -49,7 +49,7 @@ services:
     build: .
     command: celery -A src.celery_app beat --loglevel=info
     environment:
-      - DATABASE_URL=postgresql://sportsbetting:sportsbetting@postgres/sportsbetting
+      - DATABASE_URL=postgresql+asyncpg://sportsbetting:sportsbetting@postgres/sportsbetting
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/1
       - CELERY_RESULT_BACKEND=redis://redis:6379/2
