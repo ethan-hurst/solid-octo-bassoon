@@ -24,3 +24,5 @@ passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
 aiohttp
 aiohttp
+psycopg2-binary
+aiosqlite

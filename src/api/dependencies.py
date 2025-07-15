@@ -23,10 +23,14 @@ logger = logging.getLogger(__name__)
 security = HTTPBearer()
 
 # Database
+DATABASE_URL = settings.database_url
+# Use aiosqlite for SQLite async support
+if DATABASE_URL.startswith("sqlite"):
+    DATABASE_URL = DATABASE_URL.replace("sqlite://", "sqlite+aiosqlite://")
+
 engine = create_async_engine(
-    settings.database_url,
+    DATABASE_URL,
     echo=settings.debug,
-    future=True
 )
 
 AsyncSessionLocal = async_sessionmaker(
@@ -43,7 +47,7 @@ notification_service = NotificationService(connection_manager)
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """Get database session.
-    
+
     Yields:
         Database session
     """
@@ -56,7 +60,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def get_cache() -> CacheManager:
     """Get cache manager instance.
-    
+
     Returns:
         Cache manager
     """
@@ -65,7 +69,7 @@ async def get_cache() -> CacheManager:
 
 async def get_redis() -> redis.Redis:
     """Get Redis connection.
-    
+
     Returns:
         Redis connection
     """
@@ -76,10 +80,10 @@ def get_odds_aggregator(
     cache: CacheManager = Depends(get_cache)
 ) -> OddsAggregator:
     """Get odds aggregator instance.
-    
+
     Args:
         cache: Cache manager
-        
+
     Returns:
         Odds aggregator
     """
@@ -91,14 +95,14 @@ async def get_current_user(
     db: AsyncSession = Depends(get_db)
 ) -> User:
     """Get current authenticated user.
-    
+
     Args:
         credentials: JWT token credentials
         db: Database session
-        
+
     Returns:
         Current user
-        
+
     Raises:
         HTTPException: If authentication fails
     """
@@ -107,7 +111,7 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         payload = jwt.decode(
             credentials.credentials,
@@ -117,24 +121,24 @@ async def get_current_user(
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
-            
+
         token_data = TokenData(user_id=user_id)
-        
+
     except JWTError:
         raise credentials_exception
-    
+
     # Get user from database
     from src.models.database import User as DBUser
     from sqlalchemy import select
-    
+
     result = await db.execute(
         select(DBUser).where(DBUser.id == token_data.user_id)
     )
     db_user = result.scalar_one_or_none()
-    
+
     if db_user is None:
         raise credentials_exception
-    
+
     # Convert to Pydantic model
     user = User(
         id=str(db_user.id),
@@ -147,7 +151,7 @@ async def get_current_user(
         max_kelly_fraction=db_user.max_kelly_fraction,
         notification_channels=db_user.notification_channels or ["websocket"]
     )
-    
+
     return user
 
 
@@ -155,13 +159,13 @@ async def get_current_active_user(
     current_user: User = Depends(get_current_user)
 ) -> User:
     """Get current active user.
-    
+
     Args:
         current_user: Current authenticated user
-        
+
     Returns:
         Active user
-        
+
     Raises:
         HTTPException: If user is inactive
     """
@@ -175,19 +179,19 @@ async def get_current_active_user(
 
 def get_ml_ensemble() -> ModelEnsemble:
     """Get ML model ensemble.
-    
+
     Returns:
         Model ensemble for predictions
     """
     # Load or create models
     from src.models.schemas import SportType
-    
+
     models = {}
     for sport in SportType:
         model = SportsBettingModel(sport)
         # Models would be loaded from disk if available
         models[sport] = model
-    
+
     return ModelEnsemble(models)
 
 
@@ -195,10 +199,10 @@ def get_value_calculator(
     ml_ensemble: ModelEnsemble = Depends(get_ml_ensemble)
 ) -> ValueCalculator:
     """Get value calculator instance.
-    
+
     Args:
         ml_ensemble: ML model ensemble
-        
+
     Returns:
         Value calculator
     """
@@ -207,7 +211,7 @@ def get_value_calculator(
 
 def get_pubsub_manager() -> RedisPubSubManager:
     """Get Redis pub/sub manager.
-    
+
     Returns:
         Redis pub/sub manager
     """
@@ -216,7 +220,7 @@ def get_pubsub_manager() -> RedisPubSubManager:
 
 def get_connection_manager() -> ConnectionManager:
     """Get WebSocket connection manager.
-    
+
     Returns:
         Connection manager
     """
@@ -225,7 +229,7 @@ def get_connection_manager() -> ConnectionManager:
 
 def get_notification_service() -> NotificationService:
     """Get notification service.
-    
+
     Returns:
         Notification service
     """
@@ -235,14 +239,14 @@ def get_notification_service() -> NotificationService:
 # Pagination dependencies
 class PaginationParams:
     """Common pagination parameters."""
-    
+
     def __init__(
         self,
         skip: int = 0,
         limit: int = 100
     ):
         """Initialize pagination parameters.
-        
+
         Args:
             skip: Number of items to skip
             limit: Maximum number of items to return
@@ -254,7 +258,7 @@ class PaginationParams:
 # Filter dependencies
 class OddsFilterParams:
     """Odds filtering parameters."""
-    
+
     def __init__(
         self,
         sport: Optional[str] = None,
@@ -263,7 +267,7 @@ class OddsFilterParams:
         max_odds: Optional[float] = None
     ):
         """Initialize filter parameters.
-        
+
         Args:
             sport: Sport to filter by
             min_edge: Minimum edge percentage
