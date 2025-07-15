@@ -1,25 +1,72 @@
-modules = ["python-3.12"]
-run = "uvicorn undefined:app --host 0.0.0.0 --port 3000"
+modules = ["python-3.12", "nodejs-20"]
+run = "bash run_replit.sh"
+entrypoint = "src/api/main.py"
 
 [nix]
 channel = "stable-24_05"
-packages = ["glibcLocales", "libxcrypt", "postgresql"]
+packages = ["glibcLocales", "libxcrypt", "postgresql", "redis"]
 
 [deployment]
-run = ["sh", "-c", "uvicorn undefined:app --host 0.0.0.0 --port 3000"]
+run = ["bash", "run_replit.sh"]
+deploymentTarget = "cloudrun"
 
 [workflows]
-runButton = "Run Sports Betting API"
+runButton = "Run All Services"
 
 [[workflows.workflow]]
-name = "Run Sports Betting API"
-author = 40017536
+name = "Run All Services"
+author = "sports-betting"
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash run_replit.sh"
+
+[[workflows.workflow]]
+name = "Run Backend Only"
+author = "sports-betting"
 mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload"
 
+[[workflows.workflow]]
+name = "Run Frontend Only"
+author = "sports-betting"
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm run dev -- --host 0.0.0.0"
+
 [[ports]]
 localPort = 8000
 externalPort = 80
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
+
+[env]
+PYTHONPATH = "/home/runner/${REPL_SLUG}"
+DATABASE_URL = "postgresql://sportsbetting:sportsbetting@localhost/sportsbetting"
+REDIS_URL = "redis://localhost:6379/0"
+CELERY_BROKER_URL = "redis://localhost:6379/1"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
+
+[packager]
+language = "python"
+
+[packager.features]
+enabledForHosting = false
+packageSearch = true
+guessImports = true
+
+[languages]
+
+[languages.python]
+pattern = "**/*.py"
+
+[languages.python.languageServer]
+start = "pylsp"

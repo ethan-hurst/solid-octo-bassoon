@@ -1,5 +1,64 @@
-venv
-venv_linux
-__pycache__
-.ruff_cache
-.pytest_cache
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+venv_linux/
+.venv/
+env/
+ENV/
+
+# Testing
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+sportsbetting.db
+postgres_data/
+redis_data/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+ml_models/
+logs/
+.deps_installed
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.eslintcache
+frontend/npm-debug.log*
+
+# Mobile
+mobile/SportsEdge/node_modules/
+mobile/SportsEdge/coverage/
+mobile/SportsEdge/android/app/build/
+mobile/SportsEdge/android/.gradle/
+mobile/SportsEdge/ios/Pods/
+mobile/SportsEdge/ios/build/
+
+# Local settings
+.claude/settings.local.json
