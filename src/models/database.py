@@ -209,7 +209,6 @@ class LiveOddsUpdate(Base):
     __table_args__ = (
         Index("idx_live_odds_game_timestamp", "game_id", "timestamp"),
         Index("idx_live_odds_bookmaker_timestamp", "bookmaker", "timestamp"),
-        {"timescaledb_hypertable": {"time_column_name": "timestamp"}},
     )
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -233,7 +232,6 @@ class LiveEvent(Base):
     __table_args__ = (
         Index("idx_live_events_game_timestamp", "game_id", "timestamp"),
         Index("idx_live_events_type", "event_type", "timestamp"),
-        {"timescaledb_hypertable": {"time_column_name": "timestamp"}},
     )
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -256,7 +254,6 @@ class LivePrediction(Base):
     __table_args__ = (
         Index("idx_live_predictions_game_timestamp", "game_id", "prediction_timestamp"),
         Index("idx_live_predictions_model", "model_version", "prediction_timestamp"),
-        {"timescaledb_hypertable": {"time_column_name": "prediction_timestamp"}},
     )
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -280,7 +277,6 @@ class LiveValueBet(Base):
         Index("idx_live_value_bets_active", "is_active", "detected_at"),
         Index("idx_live_value_bets_game", "game_id", "is_active"),
         Index("idx_live_value_bets_edge", "edge", postgresql_where="is_active = true"),
-        {"timescaledb_hypertable": {"time_column_name": "detected_at"}},
     )
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))

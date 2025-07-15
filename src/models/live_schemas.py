@@ -105,6 +105,7 @@ class LiveEvent(BaseModel):
 
 class LivePrediction(BaseModel):
     """Live ML prediction."""
+    model_config = {"protected_namespaces": ()}
     game_id: str
     model_version: str
     home_win_probability: float = Field(ge=0.0, le=1.0)
@@ -165,6 +166,7 @@ class GameEvent(BaseModel):
 
 class PredictionUpdate(BaseModel):
     """Prediction update for WebSocket messages."""
+    model_config = {"protected_namespaces": ()}
     model_version: str
     home_win_probability: float
     away_win_probability: float

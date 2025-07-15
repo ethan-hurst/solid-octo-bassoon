@@ -4,9 +4,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import get_db
-from src.auth.dependencies import get_current_user
-from src.models.user import User
+from src.api.dependencies import get_db, get_current_user
+from src.models.schemas import User
 from src.models.schemas import (
     ValueBet,
     MarketOdds,
@@ -15,10 +14,10 @@ from src.models.schemas import (
     UserProfile,
     PerformanceSummary,
 )
-from src.services.analysis_service import AnalysisService
-from src.services.odds_service import OddsService
-from src.services.live_betting.notification_service import NotificationService
-from src.services.live_betting.value_detection import LiveValueDetector
+from src.analysis.value_calculator import ValueCalculator
+from src.data_collection.odds_aggregator import OddsAggregator
+from src.live_betting.notification_service import NotificationService
+from src.live_betting.value_bet_detector import LiveValueBetDetector
 from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/api/v1/mobile", tags=["mobile"])
